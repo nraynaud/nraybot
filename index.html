@@ -1,6 +1,6 @@
 <html lang="en">
 <head>
-
+    <meta charset="utf-8"/>
     <title>GFX test</title>
     <style>
         canvas {
@@ -174,7 +174,6 @@
         } else {
             gl_FragColor = texture2D(u_background, textCoord) / 5.0 + gl_FragColor * 5.0;
         }
-
     }
 </script>
 
@@ -271,7 +270,7 @@
   }
 
   // Put event listeners into place
-  window.addEventListener('DOMContentLoaded', function () {
+  window.addEventListener('DOMContentLoaded', async function () {
     const canvases = [...Array(14).keys()].map(i => document.getElementById(`canvas${i}`))
     const diffCanvases = [...Array(canvases.length - 1).keys()].map(i => document.getElementById(`diff${i}`))
     const minmaxCanvases = diffCanvases.map((c, i) => document.getElementById(`minmax${i}`))
@@ -279,7 +278,7 @@
     const counterElement = document.getElementById('counter')
     // we don't need to append the video to the document
     const video = document.createElement('video'),
-      videoObj = navigator.getUserMedia || navigator.mozGetUserMedia ? // our browser is up to date with specs ?
+      videoObj = navigator.mediaDevices.getUserMedia ?
         {
           video: {
             width: {min: 640, max: 640},
@@ -295,35 +294,28 @@
               maxHeight: 720
             }
           }
-        },
-      errBack = function (error) {
-        console.log('Video capture error: ', error.code)
-      }
+        }
     let raf
 
-    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
     // Put video listeners into place
-    navigator.getUserMedia(videoObj, function (stream) {
-      video.srcObject = stream
-      video.onplaying = function () {
-        video.width = video.videoWidth
-        video.height = video.videoHeight
-        for (const canvas of document.getElementsByTagName('canvas')) {
-          canvas.width = video.videoWidth
-          canvas.height = video.videoHeight
-        }
-
-        // call our loop only when the video is playing
-        raf = requestAnimationFrame(loop)
+    video.srcObject = await navigator.mediaDevices.getUserMedia(videoObj)
+    video.onplaying = function () {
+      video.width = video.videoWidth
+      video.height = video.videoHeight
+      for (const canvas of document.getElementsByTagName('canvas')) {
+        canvas.width = video.videoWidth
+        canvas.height = video.videoHeight
       }
-      video.onpause = function () {
-        // stop the loop
-        cancelAnimationFrame(raf)
-      }
-      video.play()
-    }, errBack)
 
+      // call our loop only when the video is playing
+      raf = requestAnimationFrame(loop)
+    }
+    video.onpause = function () {
+      // stop the loop
+      cancelAnimationFrame(raf)
+    }
     let lastTime = performance.now()
+    await video.play()
 
     function loop (time) {
       counterElement.innerText = '' + Math.floor(1000 / (time - lastTime))
@@ -343,12 +335,11 @@
           let current = diffCanvases[i]
           let blurrier = diffCanvases[Math.min(i + 1, diffCanvases.length - 1)]
           minMaxStack(sharper, current, blurrier, canvases[0])
-          fivekogfx.draw(minmaxCanvases[i-1])
+          fivekogfx.draw(minmaxCanvases[i - 1])
         }
       })
       raf = requestAnimationFrame(loop)
     }
-
   })
 </script>
 </body>
