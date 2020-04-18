@@ -30,6 +30,7 @@
 <div><span id=counter></span>fps</div>
 <div class="row">
     <div class="column">
+        <H1>Gaussian blur</H1>
         <canvas id="canvas0" width="1280" height="720" style="border: aqua 1px solid"></canvas>
         <canvas id="canvas1" width="1280" height="720" style="border: aqua 1px solid"></canvas>
         <canvas id="canvas2" width="1280" height="720" style="border: aqua 1px solid"></canvas>
@@ -46,6 +47,7 @@
         <canvas id="canvas13" width="1280" height="720" style="border: aqua 1px solid"></canvas>
     </div>
     <div class="column">
+        <H1>Difference of gaussians</H1>
         <canvas id="diff0" width="1280" height="720" style="border: aqua 1px solid"></canvas>
         <canvas id="diff1" width="1280" height="720" style="border: aqua 1px solid"></canvas>
         <canvas id="diff2" width="1280" height="720" style="border: aqua 1px solid"></canvas>
@@ -61,6 +63,7 @@
         <canvas id="diff12" width="1280" height="720" style="border: aqua 1px solid"></canvas>
     </div>
     <div class="column">
+        <H1>detected keypoints</H1>
         <canvas id="minmax0" class="minmax" width="1280" height="720"></canvas>
         <canvas id="minmax1" class="minmax" width="1280" height="720"></canvas>
         <canvas id="minmax2" class="minmax" width="1280" height="720"></canvas>
@@ -164,7 +167,7 @@
             }
         }
 
-        bvec3 isContrastedEnough = lessThan(abs(me - 0.5), vec3(0.3));
+        bvec3 isContrastedEnough = lessThan(abs(me - 0.5), vec3(0.03));
         bool isExtremum = any(isCorner) && any(isContrastedEnough) && (any(isMin)||any(isMax));
         if (isExtremum) {
             gl_FragColor = vec4(vec3(lessThan(vec3(0.0), det))* (vec3(isMin) + vec3(isMax)) * vec3(isContrastedEnough), 1.0);
@@ -340,7 +343,7 @@
           let current = diffCanvases[i]
           let blurrier = diffCanvases[Math.min(i + 1, diffCanvases.length - 1)]
           minMaxStack(sharper, current, blurrier, canvases[0])
-          fivekogfx.draw(minmaxCanvases[i])
+          fivekogfx.draw(minmaxCanvases[i-1])
         }
       })
       raf = requestAnimationFrame(loop)
