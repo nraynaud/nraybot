@@ -274,7 +274,8 @@
     const canvases = [...Array(14).keys()].map(i => document.getElementById(`canvas${i}`))
     const diffCanvases = [...Array(canvases.length - 1).keys()].map(i => document.getElementById(`diff${i}`))
     const minmaxCanvases = diffCanvases.map((c, i) => document.getElementById(`minmax${i}`))
-    const GAUSS_KERNELS = canvases.map((c, i) => makeGaussKernel(Math.pow(1.6, i)))
+    const k = Math.SQRT2
+    const GAUSS_KERNELS = canvases.map((c, i) => makeGaussKernel(1.6 * Math.pow(k, i)))
     const counterElement = document.getElementById('counter')
     // we don't need to append the video to the document
     const video = document.createElement('video'),
